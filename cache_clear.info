@@ -1,0 +1,4 @@
+; $Id:
+name = Cache Clear
+description = Provides the ability for users with "access clear cache" permission to clear Drupal's cache.
+core = 6.x

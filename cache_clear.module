@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @file
+ * Provides the ability for users with "access clear cache" permission to clear Drupal's cache.
+ */
+
+/**
+ * Implements hook_perm().
+ */
+function cache_clear_perm() {
+  return array('access cache clear');
+}
+
+/**
+ * Implements hook_menu().
+ */
+function cache_clear_menu() {
+  return array(
+    'cache/clear' => array(
+      'title' => t('Clear cache'),
+      'description' => t("Empty Drupal's Cache"),
+      'page callback' => 'cache_clear_flush_cache',
+      'access arguments' => array('access cache clear'),
+      'type' => MENU_CALLBACK,
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu_link_alter().
+ */
+function cache_clear_menu_link_alter(&$item, $menu) {
+  if ( in_array($item['link_path'], cache_clear_need_destination()) ) {
+    $item['options']['alter'] = TRUE;
+  }
+}
+
+/**
+ * Implements hook_translated_menu_link_alter().
+ */
+function cache_clear_translated_menu_link_alter(&$item) {
+  if ( in_array($item['href'], cache_clear_need_destination()) ) {
+    $item['localized_options']['query'] = drupal_get_destination();
+  }
+}
+
+/**
+ * Return menu item paths that need a destination.
+ */
+function cache_clear_need_destination() {
+  return array('cache/clear');
+}
+
+/**
+ * Page Callback; Empty cache.
+ */
+function cache_clear_flush_cache() {
+  drupal_flush_all_caches();
+  drupal_set_message('Cache cleared.');
+  drupal_goto();
+}
